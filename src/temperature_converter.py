@@ -6,7 +6,7 @@ def celsius_to_fahrenheit(celsius):
         celsius (float): Temperature in Celsius degrees.
     
     Returns:
-        float: Temperature converted to Fahrenheit.
+        float: Temperature converted to Fahrenheit, rounded to 2 decimal places.
     
     Raises:
         TypeError: If input is not a number.
@@ -18,4 +18,5 @@ def celsius_to_fahrenheit(celsius):
     # Conversion formula: (°C × 9/5) + 32 = °F
     fahrenheit = (celsius * 9/5) + 32
     
-    return fahrenheit
+    # Round to 2 decimal places to handle floating-point precision
+    return round(fahrenheit, 2)
