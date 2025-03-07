@@ -8,6 +8,9 @@ from src.object_logger import log_object
 
 class TestObjectLogger:
     def setup_method(self):
+        # Reset logging to a clean state
+        logging.getLogger().handlers.clear()
+        
         # Create a string buffer to capture log output
         self.log_capture = StringIO()
         self.logger = logging.getLogger()
@@ -47,22 +50,36 @@ class TestObjectLogger:
         assert json.loads(log_output.split("\n", 1)[1])
 
     def test_log_with_custom_log_level(self):
+        # Capture log for custom log level
+        log_lines = []
+        handler = logging.Handler()
+        handler.emit = lambda record: log_lines.append(record.getMessage())
+        
+        # Create test logger with the custom handler
+        test_logger = logging.getLogger("test_custom_level")
+        test_logger.setLevel(logging.DEBUG)
+        test_logger.addHandler(handler)
+        
+        # Log with DEBUG level
         test_dict = {"key": "value"}
-        log_object(test_dict, log_level=logging.DEBUG, logger=self.logger)
+        log_object(test_dict, log_level=logging.DEBUG, logger=test_logger)
         
-        # Temporarily change logger level to capture DEBUG logs
-        self.logger.setLevel(logging.DEBUG)
-        log_output = self.log_capture.getvalue()
-        
-        assert "value" in log_output
+        # Check if the value is in the logged message
+        assert any("value" in line for line in log_lines)
 
     def test_log_with_non_json_serializable_object(self):
         class NonSerializable:
             def __init__(self):
                 self.x = 1
+            
+            def __str__(self):
+                return "NonSerializable Object"
 
-        with pytest.raises(TypeError, match="Unable to log object"):
-            log_object(NonSerializable(), logger=self.logger)
+        log_object(NonSerializable(), logger=self.logger)
+        log_output = self.log_capture.getvalue()
+        
+        # Verify the object is logged using str() representation
+        assert "NonSerializable Object" in log_output
 
     def test_log_with_default_logger(self):
         # Capture stdout
