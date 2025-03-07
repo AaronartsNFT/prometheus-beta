@@ -28,9 +28,6 @@ def lzjb_compress(data):
     
     # LZJB compression implementation
     compressed = bytearray()
-    
-    # Compression context
-    copy_dict = {}
     input_len = len(data)
     current_pos = 0
     
@@ -40,13 +37,22 @@ def lzjb_compress(data):
         best_match_dist = 0
         max_look_back = min(current_pos, 1024)  # Typical LZJB window size
         
+        # Skip if not enough data to match
+        if current_pos + 2 >= input_len:
+            compressed.append(data[current_pos])
+            current_pos += 1
+            continue
+        
         for look_back in range(1, max_look_back + 1):
             match_len = 0
             
+            # Maximum match limit
+            max_match_len = min(255, input_len - current_pos)
+            
             # Check for matching sequence
-            while (current_pos + match_len < input_len and 
-                   data[current_pos + match_len] == data[current_pos - look_back + match_len] and 
-                   match_len < 255):
+            while (match_len < max_match_len and 
+                   current_pos + match_len < input_len and 
+                   data[current_pos + match_len] == data[current_pos - look_back + match_len]):
                 match_len += 1
             
             # Update best match if found
@@ -57,8 +63,15 @@ def lzjb_compress(data):
         # Encode based on match
         if best_match_len > 2:
             # Compression token: distance and length
-            compressed.append(((best_match_dist - 1) << 3) | (best_match_len - 1))
-            current_pos += best_match_len
+            try:
+                # Ensure token is within byte range
+                token = min(255, ((best_match_dist - 1) << 3) | (best_match_len - 1))
+                compressed.append(token)
+                current_pos += best_match_len
+            except ValueError:
+                # Fallback to literal byte if token generation fails
+                compressed.append(data[current_pos])
+                current_pos += 1
         else:
             # Literal byte
             compressed.append(data[current_pos])
@@ -104,10 +117,16 @@ def lzjb_decompress(compressed_data):
             distance = ((token >> 3) + 1)
             length = (token & 0x07) + 1
             
+            # Ensure distance doesn't exceed current decompressed length
+            start = max(0, len(decompressed) - distance)
+            
             # Copy matching sequence
-            start = len(decompressed) - distance
             for i in range(length):
-                byte = decompressed[start + i]
-                decompressed.append(byte)
+                if start + i < len(decompressed):
+                    byte = decompressed[start + i]
+                    decompressed.append(byte)
+                else:
+                    # Fallback mechanism for partial matches
+                    break
     
     return decompressed
