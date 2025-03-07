@@ -34,26 +34,15 @@ def to_constant_case(input_string: str) -> str:
     if not input_string:
         return ""
     
-    # Preprocessing: Replace non-alphanumeric characters with spaces
-    # This helps in splitting words effectively
-    preprocessed = re.sub(r'[^a-zA-Z0-9]+', ' ', input_string)
+    # Step 1: Normalize the string by replacing non-alphanumeric chars with spaces
+    normalized = re.sub(r'[^a-zA-Z0-9]+', ' ', input_string)
     
-    # Split into words considering camelCase, PascalCase
-    words = []
-    current_word = preprocessed[0].upper()
+    # Step 2: Add a space before any uppercase letter or number that follows a lowercase letter
+    # This helps split camelCase and PascalCase
+    normalized = re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', normalized)
     
-    for char in preprocessed[1:]:
-        # Transition from lowercase to uppercase or digit indicates word boundary
-        if (char.isupper() or char.isdigit()) and current_word[-1].islower():
-            words.append(current_word)
-            current_word = ""
-        
-        # Continue building current word
-        current_word += char.upper()
+    # Step 3: Split into words, convert to uppercase
+    words = normalized.upper().split()
     
-    # Add the last word
-    if current_word:
-        words.append(current_word)
-    
-    # Remove any empty words and join with underscore
-    return '_'.join(word for word in words if word)
+    # Step 4: Join with underscore
+    return '_'.join(words)
