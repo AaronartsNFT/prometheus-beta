@@ -37,14 +37,9 @@ def to_constant_case(input_string: str) -> str:
     # Step 1: Replace non-alphanumeric chars with spaces
     normalized = re.sub(r'[^a-zA-Z0-9]+', ' ', input_string)
     
-    # Step 2: Add space before uppercase letters and numbers
-    # This handles camelCase, PascalCase, and adjacent numbers
-    normalized = re.sub(r'([a-z])([A-Z])', r'\1 \2', normalized)
-    normalized = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', normalized)
-    normalized = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', normalized)
+    # Step 2: Break into words using regex
+    # Handle cases like HTTPRequest, helloWorld, HTTP2Request
+    words = re.findall(r'[A-Z0-9]+(?=[A-Z][a-z]+|\d|\W|$)|\d+|[A-Z][a-z]+', normalized)
     
-    # Step 3: Split words, convert to uppercase
-    words = normalized.upper().split()
-    
-    # Step 4: Join with underscore
-    return '_'.join(words)
+    # Convert to uppercase 
+    return '_'.join(word.upper() for word in words)
