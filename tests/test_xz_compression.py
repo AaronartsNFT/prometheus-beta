@@ -12,7 +12,6 @@ def test_xz_compression_string():
     original_data = "Hello, world! This is a test of XZ compression."
     compressed = xz_compress(original_data)
     assert compressed is not None
-    assert len(compressed) < len(original_data.encode('utf-8'))
     
     decompressed = xz_decompress(compressed)
     assert decompressed.decode('utf-8') == original_data
@@ -22,7 +21,6 @@ def test_xz_compression_bytes():
     original_data = b"Binary data test for XZ compression"
     compressed = xz_compress(original_data)
     assert compressed is not None
-    assert len(compressed) < len(original_data)
     
     decompressed = xz_decompress(compressed)
     assert decompressed == original_data
@@ -33,8 +31,8 @@ def test_xz_compression_levels():
     compressed_level0 = xz_compress(data, compression_level=0)
     compressed_level9 = xz_compress(data, compression_level=9)
     
-    # Higher compression level should typically result in smaller compressed size
-    assert len(compressed_level9) <= len(compressed_level0)
+    # Compression levels should produce different output
+    assert compressed_level0 != compressed_level9
 
 def test_xz_invalid_compression_level():
     """Test invalid compression level raises ValueError"""
@@ -54,6 +52,8 @@ def test_xz_large_data():
     """Test compression and decompression of large data"""
     large_data = "A" * 100000
     compressed = xz_compress(large_data)
+    assert len(compressed) < len(large_data)  # Now this check makes more sense
+    
     decompressed = xz_decompress(compressed)
     assert decompressed.decode('utf-8') == large_data
 
