@@ -34,14 +34,16 @@ def to_constant_case(input_string: str) -> str:
     if not input_string:
         return ""
     
-    # Step 1: Normalize the string by replacing non-alphanumeric chars with spaces
+    # Step 1: Replace non-alphanumeric chars with spaces
     normalized = re.sub(r'[^a-zA-Z0-9]+', ' ', input_string)
     
-    # Step 2: Add a space before any uppercase letter or number that follows a lowercase letter
-    # This helps split camelCase and PascalCase
-    normalized = re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', normalized)
+    # Step 2: Add space before uppercase letters and numbers
+    # This handles camelCase, PascalCase, and adjacent numbers
+    normalized = re.sub(r'([a-z])([A-Z])', r'\1 \2', normalized)
+    normalized = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', normalized)
+    normalized = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', normalized)
     
-    # Step 3: Split into words, convert to uppercase
+    # Step 3: Split words, convert to uppercase
     words = normalized.upper().split()
     
     # Step 4: Join with underscore
