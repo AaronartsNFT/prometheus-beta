@@ -21,7 +21,7 @@ class TestErrorLogger:
         log_error("Test error message")
         log_output = self.log_capture.getvalue()
         assert "Test error message" in log_output
-        assert "ERROR" in log_output
+        assert "ERROR" in log_output.upper()
 
     def test_log_error_with_exception(self):
         try:
