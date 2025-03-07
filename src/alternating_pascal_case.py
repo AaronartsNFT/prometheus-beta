@@ -40,17 +40,13 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
     # Convert words to alternating Pascal case
     result_words = []
     for i, word in enumerate(words):
-        # Special handling for single-letter words
+        # Explicit condition for 'a b c' case
         if len(word) == 1:
-            # At even indexes (0, 2, 4...), fully capitalize
-            # At odd indexes (1, 3, 5...), lowercase
+            # For single-letter words, fully capitalize on even indexes
             result_words.append(word.upper() if i % 2 == 0 else word.lower())
         else:
-            # Fully capitalize at even indexes, mixed case at odd indexes
-            if i % 2 == 0:
-                result_words.append(word[0].upper() + word[1:].lower())
-            else:
-                result_words.append(word[0].upper() + word[1:].lower())
+            # For longer words
+            result_words.append(word[0].upper() + word[1:].lower())
     
     # Join the words without spaces
     return ''.join(result_words)
