@@ -11,6 +11,9 @@ def is_power_of_two(n: int) -> bool:
     Returns:
         bool: True if the number is a power of two, False otherwise.
 
+    Raises:
+        TypeError: If the input is not an integer.
+
     Examples:
         >>> is_power_of_two(1)
         True
@@ -23,6 +26,10 @@ def is_power_of_two(n: int) -> bool:
         >>> is_power_of_two(3)
         False
     """
+    # Type checking: ensure input is an integer
+    if not isinstance(n, int):
+        raise TypeError("Input must be an integer")
+    
     # Check for non-positive numbers
     if n <= 0:
         return False
