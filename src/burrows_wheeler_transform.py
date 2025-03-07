@@ -10,7 +10,8 @@ def burrows_wheeler_transform(text):
         text (str): The input string to transform.
     
     Returns:
-        str: The Burrows-Wheeler transformed string.
+        tuple: A tuple containing the Burrows-Wheeler transformed string 
+               and the original row index (for inverse transform).
     
     Raises:
         TypeError: If input is not a string.
@@ -30,26 +31,39 @@ def burrows_wheeler_transform(text):
     rotations = [text_with_terminator[i:] + text_with_terminator[:i] 
                  for i in range(len(text_with_terminator))]
     
-    # Sort the rotations lexicographically
-    sorted_rotations = sorted(rotations)
+    # Create a sorted list of rotations with their original indices
+    sorted_rotations_with_indices = sorted(enumerate(rotations), key=lambda x: x[1])
+    
+    # Find the index of the original string in the sorted rotations
+    original_index = next(i for i, (idx, _) in enumerate(sorted_rotations_with_indices) if idx == 0)
     
     # Extract the last character of each sorted rotation to form the BWT
-    return ''.join(rotation[-1] for rotation in sorted_rotations)
+    bwt = ''.join(rotation[-1] for _, rotation in sorted_rotations_with_indices)
+    
+    return bwt, original_index
 
-def inverse_burrows_wheeler_transform(bwt):
+def inverse_burrows_wheeler_transform(bwt_with_index):
     """
     Reverse the Burrows-Wheeler Transform to recover the original text.
     
     Args:
-        bwt (str): The Burrows-Wheeler transformed string.
+        bwt_with_index: Either the transformed string or a tuple of 
+                        (transformed string, original row index)
     
     Returns:
         str: The original text before transformation.
     
     Raises:
-        TypeError: If input is not a string.
-        ValueError: If input string is empty.
+        TypeError: If input is not a string or tuple.
+        ValueError: If input is empty.
     """
+    # Handle different input types 
+    if isinstance(bwt_with_index, tuple):
+        bwt, original_index = bwt_with_index
+    else:
+        bwt = bwt_with_index
+        original_index = 0
+    
     # Validate input
     if not isinstance(bwt, str):
         raise TypeError("Input must be a string")
@@ -57,34 +71,28 @@ def inverse_burrows_wheeler_transform(bwt):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Count occurrences of each character
-    char_count = {}
-    for char in bwt:
-        char_count[char] = char_count.get(char, 0) + 1
-    
-    # Sort the characters of the last column
-    sorted_chars = sorted(bwt)
-    
-    # Create the first column (sorted characters)
-    first_column = sorted_chars
-    
-    # Last column (original input)
+    # Create first column by sorting the last column
+    first_column = sorted(bwt)
     last_column = list(bwt)
     
-    # Create the next array
-    next_array = {}
+    # Create next array to track character positions
+    next_arr = [0] * len(bwt)
+    char_counts = {}
+    
+    # Track character occurrences and create the next array
     for i, char in enumerate(last_column):
-        if char not in next_array:
-            next_array[char] = first_column.index(char)
-            # Move to the next occurrence for repeated characters
-            first_column[next_array[char]] = None
+        count = char_counts.get(char, 0)
+        next_index = first_column.index(char, count)
+        next_arr[i] = next_index
+        char_counts[char] = count + 1
     
     # Reconstruct the original string
-    reconstructed = []
-    current_char = '$'
-    for _ in range(len(bwt) - 1):  # -1 to remove terminator
-        current_char = last_column[next_array[current_char]]
-        reconstructed.append(current_char)
+    result = []
+    current_index = original_index
     
-    # Reverse and return (excluding terminator)
-    return ''.join(reversed(reconstructed))
+    for _ in range(len(bwt) - 1):  # -1 to remove terminator
+        current_index = next_arr[current_index]
+        result.append(last_column[current_index])
+    
+    # Reverse the result and convert to string
+    return ''.join(reversed(result))
