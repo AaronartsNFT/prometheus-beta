@@ -8,7 +8,7 @@ def convert_to_random_case(input_string):
         input_string (str): The input string to convert.
 
     Returns:
-        str: A new string with characters randomly converted to upper or lower case.
+        str: A new string with alphabetic characters randomly converted to upper or lower case.
 
     Raises:
         TypeError: If input is not a string.
@@ -21,8 +21,8 @@ def convert_to_random_case(input_string):
     if not input_string:
         return ""
 
-    # Convert to random case
+    # Convert only alphabetic characters to random case
     return ''.join(
-        char.upper() if random.choice([True, False]) else char.lower() 
+        char.upper() if char.isalpha() and random.choice([True, False]) else char
         for char in input_string
     )
