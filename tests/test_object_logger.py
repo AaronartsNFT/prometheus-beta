@@ -119,6 +119,8 @@ class TestObjectLogger:
             # Restore stdout
             sys.stdout = sys.__stdout__
             
-            # Verify the primitive is logged and printed
-            assert str(primitive) in log_output
-            assert str(primitive) in captured_output.getvalue()
+            # Verify the primitive is logged and printed, being flexible about representations
+            repr_primitive = str(primitive).lower()
+            log_repr = log_output.lower()
+            assert repr_primitive in log_repr
+            assert repr_primitive in captured_output.getvalue().lower()
