@@ -40,10 +40,10 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
     # Convert words to alternating Pascal case
     result_words = []
     for i, word in enumerate(words):
-        # Capitalize every other word
+        # Capitalize based on index
         if i % 2 == 0:
-            # For even indexes (0, 2, 4...), fully capitalize
-            result_words.append(word.upper())
+            # For even indexes (0, 2, 4...), first letter uppercase, rest lowercase
+            result_words.append(word[0].upper() + word[1:].lower())
         else:
             # For odd indexes (1, 3, 5...), first letter uppercase, rest lowercase
             result_words.append(word[0].upper() + word[1:].lower())
