@@ -44,7 +44,8 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
         if i % 2 == 0:
             result_words.append(word.capitalize())
         else:
-            result_words.append(word.lower())
+            # Ensure only first letter is uppercase
+            result_words.append(word[0].upper() + word[1:].lower())
     
     # Join the words without spaces
     return ''.join(result_words)
