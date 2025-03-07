@@ -17,17 +17,20 @@ def log_object(obj, log_level=logging.INFO, logger=None):
     """
     # Use root logger if no logger is provided
     if logger is None:
-        # Log and print to stdout for default logger
+        # Configure root logger to print to stdout
         logger = logging.getLogger()
+        logger.setLevel(logging.INFO)
         
-        # Add stdout handler if not exists
+        # Clear existing handlers to prevent duplicate logging
+        logger.handlers.clear()
+        
+        # Add stdout handler
         stdout_handler = logging.StreamHandler(sys.stdout)
-        if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-            logger.addHandler(stdout_handler)
+        stdout_handler.setLevel(logging.INFO)
+        logger.addHandler(stdout_handler)
 
     try:
         # Convert the object to a formatted JSON string
-        # Use str for non-JSON serializable objects as a fallback
         def default_serializer(o):
             try:
                 # Attempt to use object's __str__ method if json.dumps fails
@@ -45,6 +48,9 @@ def log_object(obj, log_level=logging.INFO, logger=None):
         # Log the formatted object at the specified log level
         log_message = f"Logged object:\n{formatted_obj}"
         logger.log(log_level, log_message)
+        
+        # Manually print to stdout
+        print(log_message, flush=True)
     except Exception as e:
         # Handle any unexpected serialization errors
         error_msg = f"Unable to log object: {str(e)}"
