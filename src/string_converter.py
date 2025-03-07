@@ -39,13 +39,17 @@ def to_constant_case(input_string: str) -> str:
     
     # Step 2: Insert spaces before uppercase letters and number transitions
     # This ensures proper word splitting for camelCase, PascalCase
-    normalized = re.sub(r'([a-z0-9])([A-Z])', r'\1 \2', normalized)
+    normalized = re.sub(r'([a-z])([A-Z])', r'\1 \2', normalized)
     
-    # Step 3: Handle continuous uppercase (like in HTTPRequest)
+    # Step 3: Break transitions between letters and numbers
+    normalized = re.sub(r'([a-zA-Z])(\d)', r'\1 \2', normalized)
+    normalized = re.sub(r'(\d)([a-zA-Z])', r'\1 \2', normalized)
+    
+    # Step 4: Handle continuous uppercase (like in HTTPRequest)
     normalized = re.sub(r'([A-Z])([A-Z][a-z])', r'\1 \2', normalized)
     
-    # Step 4: Split into words, convert to uppercase 
+    # Step 5: Split into words, convert to uppercase 
     words = normalized.upper().split()
     
-    # Step 5: Join with underscore
+    # Step 6: Join with underscore
     return '_'.join(words)
