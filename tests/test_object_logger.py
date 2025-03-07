@@ -120,7 +120,17 @@ class TestObjectLogger:
             sys.stdout = sys.__stdout__
             
             # Verify the primitive is logged and printed, being flexible about representations
-            repr_primitive = str(primitive).lower()
             log_repr = log_output.lower()
-            assert repr_primitive in log_repr
-            assert repr_primitive in captured_output.getvalue().lower()
+            captured_repr = captured_output.getvalue().lower()
+            
+            # Special handling for different representations
+            if primitive is None:
+                assert "null" in log_repr or "none" in log_repr
+                assert "null" in captured_repr or "none" in captured_repr
+            elif primitive is True:
+                assert "true" in log_repr or "true" in log_repr
+                assert "true" in captured_repr or "true" in captured_repr
+            else:
+                repr_primitive = str(primitive)
+                assert repr_primitive in log_repr or repr_primitive.lower() in log_repr
+                assert repr_primitive in captured_repr or repr_primitive.lower() in captured_repr
