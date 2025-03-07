@@ -49,9 +49,7 @@ def test_convert_to_random_case_preserves_non_alphabetic():
     input_str = "hello123 world!"
     result = convert_to_random_case(input_str)
     
-    # Check that non-alphabetic characters remain the same
-    assert result[5] == '1'
-    assert result[6] == '2'
-    assert result[7] == '3'
-    assert result[8] == ' '
-    assert result[13] == '!'
+    # Check that specified non-alphabetic characters remain the same
+    non_alpha_indices = [5, 6, 7, 8, 13]  # Indices of non-alphabetic characters
+    for idx in non_alpha_indices:
+        assert result[idx] == input_str[idx], f"Character at index {idx} changed unexpectedly"
