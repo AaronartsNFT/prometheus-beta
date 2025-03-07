@@ -37,21 +37,21 @@ def to_constant_case(input_string: str) -> str:
     current_word = ""
     
     for i, char in enumerate(input_string):
-        # If character is not alphanumeric, treat as word separator
+        # If not alphanumeric, reset and continue
         if not char.isalnum():
             if current_word:
                 words.append(current_word)
                 current_word = ""
             continue
         
-        # Handle camelCase and PascalCase word splitting
-        if char.isupper():
-            # Add previous word if exists
-            if current_word and any(c.islower() for c in current_word):
-                words.append(current_word)
-                current_word = ""
+        # Start a new word for uppercase and number transitions
+        if (current_word and 
+            ((char.isupper() and not current_word[-1].isupper()) or 
+             (char.isdigit() and not current_word[-1].isdigit()))):
+            words.append(current_word)
+            current_word = ""
         
-        # Add current character to word
+        # Add character to current word
         current_word += char.upper()
     
     # Add last word if exists
