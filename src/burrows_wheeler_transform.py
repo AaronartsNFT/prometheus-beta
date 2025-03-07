@@ -71,38 +71,37 @@ def inverse_burrows_wheeler_transform(bwt_with_index):
     if not bwt:
         raise ValueError("Input string cannot be empty")
     
-    # Sort the characters of the last column
-    sorted_chars = sorted(bwt)
+    # First column is the sorted characters of the BWT
+    first_column = sorted(bwt)
     
-    # Create the first column 
-    first_column = sorted_chars
+    # Mapping from last column to first column 
+    # This tracks the indices where each character appears
+    char_map = {}
+    for i, char in enumerate(first_column):
+        if char not in char_map:
+            char_map[char] = []
+        char_map[char].append(i)
     
-    # Last column (original input)
-    last_column = list(bwt)
+    # This will help track the path back to the original string
+    next_indices = [0] * len(bwt)
+    char_counters = {char: 0 for char in char_map}
     
-    # Compute next/prev mappings
-    n = len(bwt)
-    next_mapping = [0] * n
-    char_count = {}
+    # Create the mapping between last and first columns
+    for i, char in enumerate(bwt):
+        # Find the next available index for this character in first column
+        counter = char_counters[char]
+        next_indices[i] = char_map[char][counter]
+        char_counters[char] += 1
     
-    for i, char in enumerate(last_column):
-        if char not in char_count:
-            char_count[char] = 0
-        
-        # Find the index of this character in the first column
-        index = first_column.index(char, char_count[char])
-        next_mapping[i] = index
-        
-        char_count[char] += 1
-    
-    # Reconstruct the string
+    # Reconstruct the original string
     result = []
     current_index = original_index
     
-    for _ in range(n - 1):  # Exclude terminator
-        # Move to the next character
-        current_index = next_mapping[current_index]
-        result.append(last_column[current_index])
+    for _ in range(len(bwt) - 1):  # Exclude terminator
+        # Move to the next index 
+        current_index = next_indices[current_index]
+        # Append the character from the last column
+        result.append(bwt[current_index])
     
-    # Return reversed result 
+    # Return reversed result without terminator
     return ''.join(reversed(result))
