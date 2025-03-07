@@ -10,8 +10,12 @@ def test_convert_to_random_case_basic():
     # Verify the result is the same length
     assert len(result) == len(input_str)
     
-    # Verify each character is either upper or lower case
-    assert all(char.isupper() or char.islower() for char in result)
+    # Verify alphabetic characters are either upper or lower case
+    # Non-alphabetic characters can remain unchanged
+    assert all(
+        char.isupper() or char.islower() or not char.isalpha() 
+        for char in result
+    )
 
 def test_convert_to_random_case_empty_string():
     """Test empty string conversion."""
