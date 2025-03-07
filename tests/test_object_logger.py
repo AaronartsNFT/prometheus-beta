@@ -109,8 +109,16 @@ class TestObjectLogger:
             self.log_capture.truncate(0)
             self.log_capture.seek(0)
             
+            # Capture stdout
+            captured_output = StringIO()
+            sys.stdout = captured_output
+            
             log_object(primitive, logger=self.logger)
             log_output = self.log_capture.getvalue()
             
-            # Verify the primitive is logged
+            # Restore stdout
+            sys.stdout = sys.__stdout__
+            
+            # Verify the primitive is logged and printed
             assert str(primitive) in log_output
+            assert str(primitive) in captured_output.getvalue()
