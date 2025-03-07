@@ -62,31 +62,29 @@ def inverse_burrows_wheeler_transform(bwt):
     for char in bwt:
         char_count[char] = char_count.get(char, 0) + 1
     
-    # Create first column by sorting characters
-    first_column = sorted(bwt)
+    # Sort the characters of the last column
+    sorted_chars = sorted(bwt)
     
-    # Create last column (which is the input BWT)
+    # Create the first column (sorted characters)
+    first_column = sorted_chars
+    
+    # Last column (original input)
     last_column = list(bwt)
+    
+    # Create the next array
+    next_array = {}
+    for i, char in enumerate(last_column):
+        if char not in next_array:
+            next_array[char] = first_column.index(char)
+            # Move to the next occurrence for repeated characters
+            first_column[next_array[char]] = None
     
     # Reconstruct the original string
     reconstructed = []
-    current_char = '$'  # Start from terminator
-    
-    # Reconstruct the original string by tracing back
-    for _ in range(len(bwt)):
-        # Find the index of current character in first column
-        index = first_column.index(current_char)
-        
-        # Adjust index if multiple occurrences exist
-        # by tracking the occurrence number
-        current_occurrences = last_column[:index].count(current_char)
-        while current_occurrences > 0:
-            index = first_column.index(current_char, index + 1)
-            current_occurrences -= 1
-        
-        # Move to the corresponding character in last column
-        current_char = last_column[index]
+    current_char = '$'
+    for _ in range(len(bwt) - 1):  # -1 to remove terminator
+        current_char = last_column[next_array[current_char]]
         reconstructed.append(current_char)
     
-    # Remove terminator and return original string
-    return ''.join(reconstructed[:-1])
+    # Reverse and return (excluding terminator)
+    return ''.join(reversed(reconstructed))
