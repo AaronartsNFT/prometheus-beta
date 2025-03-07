@@ -1,3 +1,5 @@
+import re
+
 def to_constant_case(input_string: str) -> str:
     """
     Convert a given string to CONSTANT_CASE.
@@ -32,31 +34,13 @@ def to_constant_case(input_string: str) -> str:
     if not input_string:
         return ""
     
-    # Process the string to split into words
-    words = []
-    current_word = ""
+    # First, replace any non-alphanumeric sequences with a single space
+    # This handles special characters and multiple spaces
+    normalized = re.sub(r'[^a-zA-Z0-9]+', ' ', input_string)
     
-    for i, char in enumerate(input_string):
-        # If not alphanumeric, reset and continue
-        if not char.isalnum():
-            if current_word:
-                words.append(current_word)
-                current_word = ""
-            continue
-        
-        # Start a new word for uppercase and number transitions
-        if (current_word and 
-            ((char.isupper() and not current_word[-1].isupper()) or 
-             (char.isdigit() and not current_word[-1].isdigit()))):
-            words.append(current_word)
-            current_word = ""
-        
-        # Add character to current word
-        current_word += char.upper()
+    # Use regex to split words considering different cases
+    # This handles camelCase, PascalCase, and other mixed cases
+    words = re.findall(r'[A-Z0-9]+(?=[A-Z0-9][a-z]+|\d|\W|$)|\d+|[A-Z][a-z]+', normalized)
     
-    # Add last word if exists
-    if current_word:
-        words.append(current_word)
-    
-    # Join words with underscore
-    return '_'.join(words)
+    # Convert to uppercase and join with underscore
+    return '_'.join(word.upper() for word in words)
