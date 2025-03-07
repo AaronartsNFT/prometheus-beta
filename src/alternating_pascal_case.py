@@ -42,10 +42,11 @@ def convert_to_alternating_pascal_case(input_string: str) -> str:
     for i, word in enumerate(words):
         # Special handling for single-letter words
         if len(word) == 1:
-            # Fully capitalize single-letter words at even indexes
+            # At even indexes (0, 2, 4...), fully capitalize
+            # At odd indexes (1, 3, 5...), lowercase
             result_words.append(word.upper() if i % 2 == 0 else word.lower())
         else:
-            # For longer words, convert to standard Pascal case
+            # Fully capitalize at even indexes, mixed case at odd indexes
             if i % 2 == 0:
                 result_words.append(word[0].upper() + word[1:].lower())
             else:
