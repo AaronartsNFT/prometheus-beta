@@ -32,27 +32,31 @@ def to_constant_case(input_string: str) -> str:
     if not input_string:
         return ""
     
-    # Replace non-alphanumeric characters with spaces
-    normalized = ''.join(char if char.isalnum() else ' ' for char in input_string)
-    
-    # Split the string considering camelCase and PascalCase
+    # Process the string to split into words
     words = []
-    current_word = normalized[0].upper()
-    for char in normalized[1:]:
-        if char.isupper() and current_word[-1].islower():
-            # Start of a new word in camelCase/PascalCase
-            words.append(current_word)
-            current_word = char.upper()
-        elif char.isspace() and current_word:
-            # Space indicates word boundary
-            words.append(current_word)
-            current_word = ''
-        elif char.isalnum():
-            current_word += char.upper()
+    current_word = ""
     
-    # Add the last word
+    for i, char in enumerate(input_string):
+        # If character is not alphanumeric, treat as word separator
+        if not char.isalnum():
+            if current_word:
+                words.append(current_word)
+                current_word = ""
+            continue
+        
+        # Handle camelCase and PascalCase word splitting
+        if char.isupper():
+            # Add previous word if exists
+            if current_word and any(c.islower() for c in current_word):
+                words.append(current_word)
+                current_word = ""
+        
+        # Add current character to word
+        current_word += char.upper()
+    
+    # Add last word if exists
     if current_word:
         words.append(current_word)
     
-    # Join words with underscore and convert to uppercase
-    return '_'.join(words).upper()
+    # Join words with underscore
+    return '_'.join(words)
