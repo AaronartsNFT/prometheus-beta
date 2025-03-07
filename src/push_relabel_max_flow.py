@@ -104,6 +104,11 @@ class PushRelabelMaxFlow:
         if source == sink:
             return 0
         
+        # Reset flow and excess flow
+        self.flow = [[0] * self.num_vertices for _ in range(self.num_vertices)]
+        self.excess_flow = [0] * self.num_vertices
+        self.height = [0] * self.num_vertices
+        
         # Initialize height and excess flow
         self.height[source] = self.num_vertices
         
@@ -142,5 +147,5 @@ class PushRelabelMaxFlow:
             if not push_possible:
                 self.relabel(active_vertex)
         
-        # Return the maximum flow to the sink
-        return sum(self.flow[sink])
+        # Return the total outgoing flow from the source
+        return sum(self.flow[source])
