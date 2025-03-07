@@ -19,14 +19,14 @@ def lz78_compress(input_string):
     
     Raises:
         TypeError: If input is not a string.
-        ValueError: If input is an empty string.
     """
     # Input validation
     if not isinstance(input_string, str):
         raise TypeError("Input must be a string")
     
+    # Special case for empty string
     if not input_string:
-        raise ValueError("Input string cannot be empty")
+        return []
     
     # Initialize dictionary and output
     dictionary = {}
@@ -93,7 +93,7 @@ def lz78_decompress(compressed_data):
     if not all(isinstance(item, tuple) and len(item) == 2 
                and isinstance(item[0], int) and isinstance(item[1], str) 
                for item in compressed_data):
-        raise ValueError("Invalid compressed data format")
+        raise TypeError("Invalid compressed data format")
     
     # Initialize dictionary and decompression
     dictionary = {0: ""}
