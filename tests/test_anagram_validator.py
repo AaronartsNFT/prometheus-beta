@@ -22,13 +22,13 @@ def test_different_lengths():
 
 def test_invalid_input():
     """Test input validation for non-lowercase letters"""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input strings must contain only lowercase letters"):
         is_anagram("Hello", "hello")
     
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input strings must contain only lowercase letters"):
         is_anagram("hello", "Hello")
     
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Input strings must contain only lowercase letters"):
         is_anagram("hello123", "olleh")
 
 def test_repeated_characters():
