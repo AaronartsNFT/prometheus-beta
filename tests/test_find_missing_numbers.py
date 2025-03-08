@@ -11,7 +11,7 @@ def test_find_missing_numbers_consecutive():
 
 def test_find_missing_numbers_large_range():
     """Test finding missing numbers in a larger range."""
-    assert find_missing_numbers([10, 20, 30]) == list(range(11, 30))
+    assert find_missing_numbers([10, 20, 30]) == list(range(11, 20)) + list(range(21, 30))
 
 def test_find_missing_numbers_single_element():
     """Test an array with a single element."""
