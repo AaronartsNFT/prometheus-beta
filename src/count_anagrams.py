@@ -1,4 +1,5 @@
 from typing import List
+from itertools import permutations
 
 def count_anagrams(s: str) -> int:
     """
@@ -21,27 +22,7 @@ def count_anagrams(s: str) -> int:
         raise ValueError("Input must be a non-empty string with only lowercase letters")
     
     # Use a set to track unique sorted representations of anagrams
-    distinct_anagrams = set()
-    
-    # Generate all possible anagrams
-    def generate_anagrams(current: str, remaining: str):
-        # Base case: if no remaining letters, add current anagram
-        if not remaining:
-            distinct_anagrams.add(''.join(sorted(current)))
-            return
-        
-        # Try each remaining letter as the next character
-        for i in range(len(remaining)):
-            # Choose current letter
-            new_current = current + remaining[i]
-            # Remove chosen letter from remaining
-            new_remaining = remaining[:i] + remaining[i+1:]
-            
-            # Recursive call
-            generate_anagrams(new_current, new_remaining)
-    
-    # Start generating anagrams
-    generate_anagrams('', s)
+    distinct_anagrams = set(''.join(p) for p in set(permutations(s)))
     
     # Return count of distinct anagram signatures
     return len(distinct_anagrams)
